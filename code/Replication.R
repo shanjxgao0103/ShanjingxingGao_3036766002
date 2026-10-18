@@ -30,7 +30,7 @@ matched_words <- regmatches(codebook, matches)
 matched_words <- unlist(matched_words)  
 
 # Remove blank or whitespace-only elements
-new_column_names <- matched_words[matched_words != "" & !grepl("^\\s*\$", matched_words)]
+new_column_names <- matched_words[matched_words != "" & !grepl("^\\s*$", matched_words)]
 
 # Assign extracted names to the data frame
 colnames(df) <- new_column_names
@@ -65,7 +65,7 @@ calc_stat <- function(data, var_name, expr, is_pct = FALSE) {
   pa_mean <- mean(pa_vals)
   
   # Calculate unpooled t-statistic manually to prevent t.test() errors 
-  # when variance is exactly zero (e.g., Wage = \$4.25 in Wave 2 for NJ)
+  # when variance is exactly zero (e.g., Wage = $4.25 in Wave 2 for NJ)
   nj_var <- var(nj_vals)
   pa_var <- var(pa_vals)
   nj_n <- length(nj_vals)
@@ -98,7 +98,7 @@ sec2 <- bind_rows(
   calc_stat(df, "a. FTE employment", EMPFT + NMGRS + 0.5 * EMPPT, FALSE),
   calc_stat(df, "b. Percentage full-time employees", (EMPFT + NMGRS) / (EMPFT + EMPPT + NMGRS), TRUE),
   calc_stat(df, "c. Starting wage", WAGE_ST, FALSE),
-  calc_stat(df, "d. Wage = \$4.25 (percentage)", WAGE_ST == 4.25, TRUE),
+  calc_stat(df, "d. Wage = $4.25 (percentage)", WAGE_ST == 4.25, TRUE),
   calc_stat(df, "e. Price of full meal", PENTREE + PFRY + PSODA, FALSE),
   calc_stat(df, "f. Hours open (weekday)", HRSOPEN, FALSE)
 )
@@ -108,8 +108,8 @@ sec3 <- bind_rows(
   calc_stat(df, "a. FTE employment", EMPFT2 + NMGRS2 + 0.5 * EMPPT2, FALSE),
   calc_stat(df, "b. Percentage full-time employees", (EMPFT2 + NMGRS2) / (EMPFT2 + EMPPT2 + NMGRS2), TRUE),
   calc_stat(df, "c. Starting wage", WAGE_ST2, FALSE),
-  calc_stat(df, "d. Wage = \$4.25 (percentage)", WAGE_ST2 == 4.25, TRUE),
-  calc_stat(df, "e. Wage = \$5.05 (percentage)", WAGE_ST2 == 5.05, TRUE),
+  calc_stat(df, "d. Wage = $4.25 (percentage)", WAGE_ST2 == 4.25, TRUE),
+  calc_stat(df, "e. Wage = $5.05 (percentage)", WAGE_ST2 == 5.05, TRUE),
   calc_stat(df, "f. Price of full meal", PENTREE2 + PFRY2 + PSODA2, FALSE),
   calc_stat(df, "g. Hours open (weekday)", HRSOPEN2, FALSE)
 )
