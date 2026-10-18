@@ -6,9 +6,7 @@ packages <- c(
   "plm",
   "haven",
   "kableExtra",
-  "webshot2",
-  "gridExtra",
-  "chromote"
+  "gridExtra"
 )
 
 installed <- rownames(installed.packages())
@@ -136,9 +134,11 @@ table2_formatted <- table2 |>
   pack_rows("2. Means in Wave 1", 6, 11) |>
   pack_rows("3. Means in Wave 2", 12, 18)
 
-# Save the table to outputs/tables/
-table2_formatted |>
-  save_kable(file = "../outputs/tables/table2_replication.png", zoom = 1.5)
+# Save the table as HTML without launching Chrome
+htmltools::save_html(
+  htmltools::tagList(table2_formatted),
+  file = "../outputs/tables/table2_replication.html"
+)
 
 # -----------------------------------------------------------------------------
 # 3. Table 3: Average Employment Per Store Before and After the Rise
@@ -277,9 +277,11 @@ table3_formatted <- table3 |>
   )) |>
   column_spec(1, width = "350px")
 
-# Save the table to outputs/tables/
-table3_formatted |>
-  save_kable(file = "../outputs/tables/table3_replication.png", zoom = 1.5)
+# Save the table as HTML without launching Chrome
+htmltools::save_html(
+  htmltools::tagList(table3_formatted),
+  file = "../outputs/tables/table3_replication.html"
+)
 
 # -----------------------------------------------------------------------------
 # 4. Table 4: Reduced Form Models for Change in Employment
@@ -376,9 +378,11 @@ table4_formatted <- table4 |>
   kable_classic(full_width = FALSE, html_font = "Cambria") |>
   add_header_above(c(" " = 1, "Model" = 5))
 
-# Save the table to outputs/tables/
-table4_formatted |>
-  save_kable(file = "../outputs/tables/table4_replication.png", zoom = 1.5)
+# Save the table as HTML without launching Chrome
+htmltools::save_html(
+  htmltools::tagList(table4_formatted),
+  file = "../outputs/tables/table4_replication.html"
+)
 
 # -----------------------------------------------------------------------------
 # 5. Checking for data validity for table 4
@@ -426,9 +430,11 @@ target_check_formatted <- target_check |>
   kable(caption = "Target Verification for Table 4", align = "c") |>
   kable_classic(full_width = FALSE, html_font = "Cambria")
 
-# Save diagnostic table to outputs/tables/
-target_check_formatted |>
-  save_kable(file = "../outputs/tables/table4_diagnostic.png", zoom = 1.5)
+# Save diagnostic table as HTML without launching Chrome
+htmltools::save_html(
+  htmltools::tagList(target_check_formatted),
+  file = "../outputs/tables/table4_diagnostic.html"
+)
 
 # -----------------------------------------------------------------------------
 # 6. Figure 1
