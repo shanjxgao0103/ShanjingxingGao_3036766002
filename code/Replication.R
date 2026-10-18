@@ -10,12 +10,12 @@ library(gridExtra)
 
 # -----------------------------------------------------------------------------
 # 1. Data Loading and Cleaning
-# Assuming execution from the /scripts directory
+# Assuming execution from the /code directory
 # -----------------------------------------------------------------------------
 
-# Load the dataset and codebook using relative paths
-df <- read.table("../data/public.dat")
-codebook <- read_lines("../data/codebook")
+# Load the dataset and codebook using relative paths from raw data directory
+df <- read.table("../data/raw/public.dat")
+codebook <- read_lines("../data/raw/codebook")
 
 # Use regex to match the beginning of each line followed by a space
 pattern <- "^\\S+(?=  )"
@@ -124,9 +124,9 @@ table2_formatted <- table2 |>
   pack_rows("2. Means in Wave 1", 6, 11) |>
   pack_rows("3. Means in Wave 2", 12, 18)
 
-# Save the table to the output folder
+# Save the table to outputs/tables/
 table2_formatted |>
-  save_kable(file = "../output/table2_replication.png", zoom = 1.5)
+  save_kable(file = "../outputs/tables/table2_replication.png", zoom = 1.5)
 
 # -----------------------------------------------------------------------------
 # 3. Table 3: Average Employment Per Store Before and After the Rise
@@ -265,9 +265,9 @@ table3_formatted <- table3 |>
   )) |>
   column_spec(1, width = "350px")
 
-# Save the table to the output folder
+# Save the table to outputs/tables/
 table3_formatted |>
-  save_kable(file = "../output/table3_replication.png", zoom = 1.5)
+  save_kable(file = "../outputs/tables/table3_replication.png", zoom = 1.5)
 
 # -----------------------------------------------------------------------------
 # 4. Table 4: Reduced Form Models for Change in Employment
@@ -364,8 +364,9 @@ table4_formatted <- table4 |>
   kable_classic(full_width = FALSE, html_font = "Cambria") |>
   add_header_above(c(" " = 1, "Model" = 5))
 
+# Save the table to outputs/tables/
 table4_formatted |>
-  save_kable(file = "../output/table4_replication.png", zoom = 1.5)
+  save_kable(file = "../outputs/tables/table4_replication.png", zoom = 1.5)
 
 # -----------------------------------------------------------------------------
 # 5. Checking for data validity for table 4
@@ -409,10 +410,13 @@ target_check <- final_table4_df |>
   )
 
 # Output and save diagnostic table
-target_check |>
+target_check_formatted <- target_check |>
   kable(caption = "Target Verification for Table 4", align = "c") |>
-  kable_classic(full_width = FALSE, html_font = "Cambria") |>
-  save_kable(file = "../output/table4_diagnostic.png", zoom = 1.5)
+  kable_classic(full_width = FALSE, html_font = "Cambria")
+
+# Save diagnostic table to outputs/tables/
+target_check_formatted |>
+  save_kable(file = "../outputs/tables/table4_diagnostic.png", zoom = 1.5)
 
 # -----------------------------------------------------------------------------
 # 6. Figure 1
@@ -452,9 +456,9 @@ p2 <- df |>
 # Align the two plots vertically using arrangeGrob
 figure1 <- arrangeGrob(p1, p2, nrow = 2)
 
-# Save the combined figure to the output folder
-ggsave(filename = "../output/Figure1_Replication.png", plot = figure1, 
+# Save the combined figure to outputs/figures/
+ggsave(filename = "../outputs/figures/Figure1_Replication.png", plot = figure1, 
        width = 8, height = 10, dpi = 300)
 
-# Display in R viewer (optional for execution, but keeps parity with the original script)
+# Display in R viewer
 grid.arrange(p1, p2, nrow = 2)

@@ -3,15 +3,21 @@ library(dplyr)
 library(ggplot2)
 library(tidysynth)
 
+# -----------------------------------------------------------------------------
 # 1. Load Data using Relative Paths
-# Assuming this script is executed from the /scripts directory within the repository
-data_09_19_722513 <- read.csv("../data/data_09_19_722513.csv", colClasses = c("area_fips" = "character"))
+# Assuming this script is executed from the /code directory within the repository
+# -----------------------------------------------------------------------------
+
+data_09_19_722513 <- read.csv("../data/processed/data_09_19_722513.csv", colClasses = c("area_fips" = "character"))
 
 california_fips <- data_09_19_722513 %>%
   filter(treat == 1) %>%
   pull(area_fips)
 
+# -----------------------------------------------------------------------------
 # 2. Define the core Synthetic Control function to avoid repetition
+# -----------------------------------------------------------------------------
+
 run_county_scm <- function(target_fips, target_size, df) {
   
   # Filter data for the specific treated county and matching-sized donors
@@ -64,7 +70,10 @@ run_county_scm <- function(target_fips, target_size, df) {
   return(outcomes)
 }
 
+# -----------------------------------------------------------------------------
 # 3. Helper function to calculate weighted gaps, plot, and save the images
+# -----------------------------------------------------------------------------
+
 generate_gap_plot <- function(group_name, df) {
   
   # Filter for the specific group (or all if group_name == "All")
@@ -105,9 +114,9 @@ generate_gap_plot <- function(group_name, df) {
   p <- ggplot() +
     geom_point(data = weighted_gaps, aes(x = relative_time, y = gap_percent, size = population_weight), 
                color = "lightblue", alpha = 0.6) +
-    geom_line(data = avg_weighted_gaps, aes(x = relative_time, y = avg_gap_percent), color = "blue", size = 0.8) +
-    geom_vline(xintercept = 0, linetype = "dashed", color = "black", size = 0.5) +
-    geom_hline(yintercept = 0, color = "black", size = 0.5) +
+    geom_line(data = avg_weighted_gaps, aes(x = relative_time, y = avg_gap_percent), color = "blue", linewidth = 0.8) +
+    geom_vline(xintercept = 0, linetype = "dashed", color = "black", linewidth = 0.5) +
+    geom_hline(yintercept = 0, color = "black", linewidth = 0.5) +
     scale_x_continuous(
       breaks = seq(min(weighted_gaps$relative_time), max(weighted_gaps$relative_time), by = 2), 
       expand = c(0, 0)
@@ -128,13 +137,16 @@ generate_gap_plot <- function(group_name, df) {
     ) +
     coord_cartesian(clip = "off")
   
-  # Save the final plot securely to the output directory using relative paths
-  filename <- paste0("../output/", tolower(group_name), "_counties_norm_emplvl_722513_gap_plot.png")
+  # Save the final plot securely to outputs/figures/ using relative paths
+  filename <- paste0("../outputs/figures/", tolower(group_name), "_counties_norm_emplvl_722513_gap_plot.png")
   ggsave(filename, plot = p, width = 12, height = 6, bg = "white")
   message("Successfully saved: ", filename)
 }
 
+# -----------------------------------------------------------------------------
 # 4. Execute the plotting function for all four required cohorts
+# -----------------------------------------------------------------------------
+
 generate_gap_plot("Large", data_09_19_722513)
 generate_gap_plot("Medium", data_09_19_722513)
 generate_gap_plot("Small", data_09_19_722513)
