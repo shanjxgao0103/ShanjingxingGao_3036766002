@@ -5,7 +5,6 @@ packages <- c(
   "dplyr",
   "plm",
   "haven",
-  "kableExtra",
   "gridExtra"
 )
 
@@ -17,6 +16,43 @@ if (length(missing) > 0) {
 }
 
 invisible(lapply(packages, library, character.only = TRUE))
+
+save_table_png <- function(data, filename, title, width = 10, height = 5, base_size = 11) {
+  dir.create(dirname(filename), recursive = TRUE, showWarnings = FALSE)
+
+  table_grob <- gridExtra::tableGrob(
+    data,
+    rows = NULL,
+    theme = gridExtra::ttheme_minimal(
+      base_size = base_size,
+      padding = grid::unit(c(5, 5), "mm")
+    )
+  )
+
+  title_grob <- grid::textGrob(
+    title,
+    gp = grid::gpar(fontface = "bold", fontsize = base_size + 3)
+  )
+
+  output_grob <- gridExtra::arrangeGrob(
+    title_grob,
+    table_grob,
+    ncol = 1,
+    heights = grid::unit.c(grid::unit(0.45, "in"), grid::unit(1, "null"))
+  )
+
+  grDevices::png(
+    filename,
+    width = width,
+    height = height,
+    units = "in",
+    res = 300,
+    bg = "white"
+  )
+  grid::grid.draw(output_grob)
+  grDevices::dev.off()
+}
+
 
 # -----------------------------------------------------------------------------
 # 1. Data Loading and Cleaning
@@ -127,17 +163,22 @@ sec3 <- bind_rows(
 # Combine and Format the Output Table
 table2 <- bind_rows(sec1, sec2, sec3)
 
-table2_formatted <- table2 |>
-  kable(caption = "Table 2 - Means of Key Variables", row.names = FALSE) |>
-  kable_classic(full_width = FALSE, html_font = "Cambria") |>
-  pack_rows("1. Distribution of Store Types (percentages)", 1, 5) |>
-  pack_rows("2. Means in Wave 1", 6, 11) |>
-  pack_rows("3. Means in Wave 2", 12, 18)
+table2_image <- table2 |>
+  mutate(
+    Section = c(
+      rep("Store types", nrow(sec1)),
+      rep("Wave 1", nrow(sec2)),
+      rep("Wave 2", nrow(sec3))
+    )
+  ) |>
+  select(Section, Variable, NJ, PA, t)
 
-# Save the table as HTML without launching Chrome
-htmltools::save_html(
-  htmltools::tagList(table2_formatted),
-  file = "../outputs/tables/table2_replication.html"
+save_table_png(
+  table2_image,
+  "../outputs/tables/table2_replication.png",
+  "Table 2 - Means of Key Variables",
+  width = 10,
+  height = 7
 )
 
 # -----------------------------------------------------------------------------
@@ -261,26 +302,13 @@ table3 <- tibble(
 )
 
 # Output with proper headers and formatting using Kable
-table3_formatted <- table3 |>
-  kable(
-    caption = "Table 3 - Average Employment Per Store Before and After the Rise in New Jersey Minimum Wage",
-    row.names = FALSE,
-    align = c("l", rep("c", 8))
-  ) |>
-  kable_classic(full_width = FALSE, html_font = "Cambria") |>
-  add_header_above(c(
-    " " = 1,
-    "Stores by state" = 2,
-    " " = 1,
-    "Stores in New Jersey" = 3,
-    "Differences within NJ" = 2
-  )) |>
-  column_spec(1, width = "350px")
-
-# Save the table as HTML without launching Chrome
-htmltools::save_html(
-  htmltools::tagList(table3_formatted),
-  file = "../outputs/tables/table3_replication.html"
+save_table_png(
+  table3,
+  "../outputs/tables/table3_replication.png",
+  "Table 3 - Average Employment Per Store Before and After the Rise in New Jersey Minimum Wage",
+  width = 16,
+  height = 5,
+  base_size = 10
 )
 
 # -----------------------------------------------------------------------------
@@ -370,18 +398,12 @@ table4 <- tibble(
 )
 
 # Output Table using Kable
-table4_formatted <- table4 |>
-  kable(
-    caption = "Table 4 - Reduced-Form Models for Change in Employment",
-    align = c("l", rep("c", 5))
-  ) |>
-  kable_classic(full_width = FALSE, html_font = "Cambria") |>
-  add_header_above(c(" " = 1, "Model" = 5))
-
-# Save the table as HTML without launching Chrome
-htmltools::save_html(
-  htmltools::tagList(table4_formatted),
-  file = "../outputs/tables/table4_replication.html"
+save_table_png(
+  table4,
+  "../outputs/tables/table4_replication.png",
+  "Table 4 - Reduced-Form Models for Change in Employment",
+  width = 13,
+  height = 5.5
 )
 
 # -----------------------------------------------------------------------------
@@ -426,14 +448,12 @@ target_check <- final_table4_df |>
   )
 
 # Output and save diagnostic table
-target_check_formatted <- target_check |>
-  kable(caption = "Target Verification for Table 4", align = "c") |>
-  kable_classic(full_width = FALSE, html_font = "Cambria")
-
-# Save diagnostic table as HTML without launching Chrome
-htmltools::save_html(
-  htmltools::tagList(target_check_formatted),
-  file = "../outputs/tables/table4_diagnostic.html"
+save_table_png(
+  target_check,
+  "../outputs/tables/table4_diagnostic.png",
+  "Target Verification for Table 4",
+  width = 10,
+  height = 3.5
 )
 
 # -----------------------------------------------------------------------------
