@@ -1,12 +1,24 @@
 # Load necessary libraries
-library(ggplot2)
-library(tidyverse)
-library(dplyr)
-library(plm)
-library(haven)
-library(kableExtra)
-library(webshot2)
-library(gridExtra) 
+packages <- c(
+  "ggplot2",
+  "tidyverse",
+  "dplyr",
+  "plm",
+  "haven",
+  "kableExtra",
+  "webshot2",
+  "gridExtra",
+  "chromote"
+)
+
+installed <- rownames(installed.packages())
+missing <- packages[!packages %in% installed]
+
+if (length(missing) > 0) {
+  install.packages(missing, repos = "https://cloud.r-project.org")
+}
+
+invisible(lapply(packages, library, character.only = TRUE))
 
 # -----------------------------------------------------------------------------
 # 1. Data Loading and Cleaning
